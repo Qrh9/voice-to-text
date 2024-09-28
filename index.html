@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rio time's </title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Montserrat', sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: black;
+            margin: 0;
+            color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bg-wrapper {
+            position: absolute;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            top: 0;
+            left: 0;
+            z-index: -2;
+        }
+
+        .bg {
+            height: 400vh;
+            width: 400vw;
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            left: 0;
+            background: url(https://flowcharts.sapphire-games.com/img/dots.svg);
+            background-size: 2.5%;
+            animation: move 100s linear infinite;
+            transform: rotateX(50deg) rotateY(3deg) rotateZ(-21deg)
+                translateX(-50%) translateY(-50%);
+        }
+
+        @keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 100% -100%;
+            }
+        }
+
+        .overlay {
+            position: absolute;
+            height: 100vh;
+            width: 100vw;
+            background: linear-gradient(45deg, #00000054, #000000);
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(3px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            max-width: 800px;
+            width: 90%;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #fff;
+            margin: 0 0 20px 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px #000;
+        }
+
+        #transcript {
+            font-size: 1.4em;
+            line-height: 1.8;
+            min-height: 150px;
+            margin: 10px 0;
+            color: #f0f0f0;
+            text-align: left;
+            padding: 15px;
+            background: #2c2c2c;
+            border-radius: 10px;
+            direction: rtl;
+            overflow-y: auto;
+            font-weight: bold;
+        }
+
+        #controls {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        button, select {
+            background-color: transparent;
+            border: 2px solid #f0f0f0; 
+            color: #f0f0f0;
+            padding: 12px 25px;
+            text-align: center;
+            font-size: 1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            min-width: 120px;
+        }
+
+        button:hover, select:hover {
+            background-color: #f0f0f0; 
+            color: #000;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(240, 240, 240, 0.2);
+        }
+
+        button:active, select:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        button:disabled {
+            background-color: #777;
+            border-color: #777;
+            cursor: not-allowed;
+            color: #ccc;
+        }
+
+        #mic-icon {
+            vertical-align: middle;
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .recording #mic-icon {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        #visualizer {
+            width: 100%;
+            height: 100px;
+            background-color: #1c1c1c;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+        }
+
+        #additional-option {
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .language-select-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .language-select-container select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: transparent;
+            border: 2px solid #f0f0f0; 
+            color: #f0f0f0;
+            padding: 12px 25px 12px 50px;
+            text-align: center;
+            font-size: 1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            font-weight: 500;
+            min-width: 150px;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/3917/3917538.png');
+            background-repeat: no-repeat;
+            background-position: 15px center;
+            background-size: 20px 20px;
+        }
+
+        .language-select-container select:hover {
+            background-color: #f0f0f0;
+            color: #000;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(240, 240, 240, 0.2);
+        }
+
+        .language-select-container::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #f0f0f0;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            #transcript {
+                font-size: 1em;
+            }
+
+            button, select {
+                font-size: 0.9em;
+                padding: 10px 20px;
+                min-width: 100px;
+            }
+
+            #visualizer {
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-wrapper">
+        <div class="bg"></div>
+        <div class="overlay"></div>
+    </div>
+
+    <div class="content-wrapper">
+        <h1>موقع تحويل الكلام إلى نص</h1>
+        <p id="transcript">ابدأ التحدث وسيتم عرض النص هنا...</p>
+        <div id="visualizer">
+            <canvas id="canvas"></canvas>
+        </div>
+        <div id="controls">
+            <div class="language-select-container">
+                <select id="language-select">
+                    <option value="ar-SA" data-icon="https://cdn-icons-png.flaticon.com/512/3917/3917538.png">العربية</option>
+                    <option value="en-US" data-icon="https://cdn-icons-png.flaticon.com/512/3917/3917538.png">English</option>
+                </select>
+            </div>
+            <button id="start-btn">
+                ابدأ التحدث
+                <svg id="mic-icon" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#f0f0f0" d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zm-5 7v4h2v-4h-2z"/>
+                </svg>
+            </button>
+            <button id="stop-btn" disabled>إيقاف التحدث</button>
+            <button id="download-btn">تحميل النص</button>
+            <button id="clear-btn">مسح النص</button>
+        </div>
+        <div id="additional-option">
+            by : Rio (Qrh9)
+                    </div>
+    </div>
+
+    <script>
+        window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!window.SpeechRecognition) {
+            alert("استعمل غير متصفح");
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.interimResults = true;
+        recognition.continuous = true;
+
+        let transcriptElement = document.getElementById('transcript');
+        let startBtn = document.getElementById('start-btn');
+        let stopBtn = document.getElementById('stop-btn');
+        let downloadBtn = document.getElementById('download-btn');
+        let clearBtn = document.getElementById('clear-btn');
+        let languageSelect = document.getElementById('language-select');
+
+        let isListening = false;
+        let finalTranscript = '';
+
+        languageSelect.addEventListener('change', () => {
+            recognition.lang = languageSelect.value;
+            updateLanguageIcon();
+            if (languageSelect.value === 'ar-SA') {
+                transcriptElement.style.direction = 'rtl';
+                transcriptElement.style.textAlign = 'right';
+            } else {
+                transcriptElement.style.direction = 'ltr';
+                transcriptElement.style.textAlign = 'left';
+            }
+        });
+
+        recognition.lang = languageSelect.value;
+
+        updateLanguageIcon();
+
+        function updateLanguageIcon() {
+            const selectedOption = languageSelect.options[languageSelect.selectedIndex];
+            const iconUrl = selectedOption.getAttribute('data-icon');
+            const selectElement = languageSelect.parentElement.querySelector('select');
+            selectElement.style.backgroundImage = `url(${iconUrl})`;
+        }
+
+        let audioContext;
+        let analyser;
+        let microphone;
+
+        function setupAudioVisualizer() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then((stream) => {
+                    microphone = audioContext.createMediaStreamSource(stream);
+                    microphone.connect(analyser);
+                    visualize();
+                })
+                .catch((err) => {
+                    console.error('حدث خطأ أثناء الوصول إلى الميكروفون:', err);
+                });
+        }
+
+        function visualize() {
+            const canvas = document.getElementById('canvas');
+            const canvasContext = canvas.getContext('2d');
+
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+
+            function draw() {
+                if (!isListening) {
+                    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+                    canvasContext.strokeStyle = '#f0f0f0';
+                    canvasContext.lineWidth = 2;
+                    canvasContext.beginPath();
+                    canvasContext.moveTo(0, canvas.height / 2);
+                    canvasContext.lineTo(canvas.width, canvas.height / 2);
+                    canvasContext.stroke();
+                    return;
+                }
+
+                requestAnimationFrame(draw);
+
+                analyser.getByteTimeDomainData(dataArray);
+
+                canvasContext.fillStyle = '#1c1c1c';
+                canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+
+                canvasContext.lineWidth = 2;
+                canvasContext.strokeStyle = '#00ffcc'; 
+
+                canvasContext.beginPath();
+
+                let sliceWidth = canvas.width * 1.0 / bufferLength;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    let v = dataArray[i] / 128.0;
+                    let y = v * canvas.height / 2;
+
+                    if (i === 0) {
+                        canvasContext.moveTo(x, y);
+                    } else {
+                        canvasContext.lineTo(x, y);
+                    }
+
+                    x += sliceWidth;
+                }
+
+                canvasContext.lineTo(canvas.width, canvas.height / 2);
+                canvasContext.stroke();
+            }
+
+            draw();
+        }
+
+        recognition.addEventListener('result', (e) => {
+            let interimTranscript = '';
+            for (let i = e.resultIndex; i < e.results.length; ++i) {
+                let transcript = e.results[i][0].transcript;
+                if (e.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            transcriptElement.innerHTML = finalTranscript + '<span style="color: #999;">' + interimTranscript + '</span>';
+        });
+
+        recognition.addEventListener('end', () => {
+            if (isListening) {
+                recognition.start();
+            } else {
+                startBtn.classList.remove('recording');
+            }
+        });
+
+        startBtn.addEventListener('click', () => {
+            if (!isListening) {
+                recognition.lang = languageSelect.value;
+                recognition.start();
+                isListening = true;
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                startBtn.classList.add('recording');
+                setupAudioVisualizer();
+            }
+        });
+
+        stopBtn.addEventListener('click', () => {
+            recognition.stop();
+            isListening = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            startBtn.classList.remove('recording');
+            if (audioContext) {
+                audioContext.close();
+            }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            let text = transcriptElement.innerText;
+            let blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'transcript.txt';
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            finalTranscript = '';
+            transcriptElement.innerHTML = 'ابدأ التحدث وسيتم عرض النص هنا...';
+        });
+    </script>
+</body>
+</html>
